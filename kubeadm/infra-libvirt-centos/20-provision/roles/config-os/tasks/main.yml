@@ -1,0 +1,64 @@
+---
+- name: Make sure we have a 'wheel' group
+  group:
+    name: '{{item}}'
+    state: present
+  with_items:
+    - docker
+    - wheel
+  become: true
+
+- name: Set vm.max_map_count=262144 as recommended by Elasticsearch
+  sysctl:
+    name: vm.max_map_count
+    value: 262144
+    state: present
+    sysctl_set: yes
+    reload: yes
+  become: true
+
+- name: Allow 'wheel' group to have passwordless sudo
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '^%wheel'
+    line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+    validate: 'visudo -cf %s'
+  become: true
+
+- name: Add the user K8s install and Adm User
+  user:
+    name: "{{k8sadmuser}}"
+    generate_ssh_key: no
+    ssh_key_bits: 2048
+    # ssh_key_file: .ssh/id_rsa
+    shell: /bin/bash
+    groups: systemd-journal,wheel,adm,docker
+  become: true
+
+- name: Set Authorized Keys for K8s install and Adm User
+  authorized_key:
+    user: "{{k8sadmuser}}"
+    state: present
+    key: '{{item}}'
+  with_items:
+    - '{{sshPublicKey}}'
+  become: true
+
+- name: Disables SELinux
+  selinux:
+    state: disabled
+  become: true
+
+- name: Install dependencies for k8s longhorn.
+  package:
+    name: '{{ item }}'
+    state: present
+    update_cache: yes
+  with_items:
+    - iscsi-initiator-utils
+  become: true
+
+- name: disable swap
+  shell: swapoff -a
+  become: true

@@ -1,0 +1,6 @@
+
+- name: Template rancher-cluster.yml
+  template:
+    src: rancher-cluster.yml.j2
+    dest: "{{rke_project_path}}/rancher-cluster.yml"
+    force: yes

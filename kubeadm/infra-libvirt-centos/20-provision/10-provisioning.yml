@@ -1,0 +1,26 @@
+- hosts: 'k1'
+  gather_facts: False
+  roles:
+    - config-os
+    - kubeadm
+    - docker
+
+- hosts: 'master'
+  gather_facts: true
+  roles:
+    - kubeadm-master
+
+- hosts: "worker"
+  gather_facts: true
+  pre_tasks:
+  - include_vars: "{{ inventory_dir }}/group_vars/{{ cluster_name }}/kubeadm.join.key.yml"
+  roles:
+  - { role: kubeadm-worker }
+
+
+# - hosts: 127.0.0.1
+#   connection: local
+#   gather_facts: False
+#   roles:
+#     - self-sign-certs
+#     - rancher-rke

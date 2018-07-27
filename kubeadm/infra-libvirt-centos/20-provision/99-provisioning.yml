@@ -1,0 +1,11 @@
+- hosts: "{{ hosts | default('all') }}"
+  gather_facts: False
+  roles:
+    - "{{role}}"
+
+# - hosts: 127.0.0.1
+#   connection: local
+#   gather_facts: False
+#   roles:
+#     - self-sign-certs
+#     - rancher-rke

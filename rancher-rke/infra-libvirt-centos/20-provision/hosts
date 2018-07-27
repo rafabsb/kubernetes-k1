@@ -1,0 +1,20 @@
+m0 ansible_host=192.168.8.100 ansible_port=22 ansible_user='centos' ansible_ssh_private_key_file='/home/rafael/.ssh/id_rsa'
+m1 ansible_host=192.168.8.101 ansible_port=22 ansible_user='centos' ansible_ssh_private_key_file='/home/rafael/.ssh/id_rsa'
+m2 ansible_host=192.168.8.102 ansible_port=22 ansible_user='centos' ansible_ssh_private_key_file='/home/rafael/.ssh/id_rsa'
+m3 ansible_host=192.168.8.103 ansible_port=22 ansible_user='centos' ansible_ssh_private_key_file='/home/rafael/.ssh/id_rsa'
+m4 ansible_host=192.168.8.104 ansible_port=22 ansible_user='centos' ansible_ssh_private_key_file='/home/rafael/.ssh/id_rsa'
+m5 ansible_host=192.168.8.105 ansible_port=22 ansible_user='centos' ansible_ssh_private_key_file='/home/rafael/.ssh/id_rsa'
+
+[k1:children]
+master
+worker
+
+[master]
+m0
+m1
+m2
+
+[worker]
+m3
+m4
+m5

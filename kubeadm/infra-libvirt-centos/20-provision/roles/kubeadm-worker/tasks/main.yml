@@ -1,0 +1,5 @@
+
+
+- name: Join worker-node
+  shell: "{{ kubeadm_join }}"
+  become: true

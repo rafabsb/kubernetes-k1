@@ -1,0 +1,34 @@
+- name: Ensure python OpenSSL dependencies are installed.
+  pip:
+    name: pyOpenSSL
+    state: present
+  become: true
+
+- name: Ensure directory exists for local self-signed TLS certs.
+  file:
+    path: "{{rke_project_path}}/{{ server_hostname }}"
+    state: directory
+
+- name: Generate an OpenSSL private key.
+  openssl_privatekey:
+    path: "{{rke_project_path}}/{{ server_hostname }}/privkey.pem"
+    owner: "{{cert_user}}"
+    group: "{{cert_user_group}}"
+
+- name: Generate an OpenSSL CSR.
+  openssl_csr:
+    path: "{{rke_project_path}}/{{ server_hostname }}/{{ server_hostname }}.csr"
+    privatekey_path: "{{rke_project_path}}/{{ server_hostname }}/privkey.pem"
+    country_name: "{{country_name}}"
+    organization_name: "{{organization_name}}"
+    email_address: "{{email_address}}"
+    common_name: "{{ server_hostname }}"
+
+- name: Generate a Self Signed OpenSSL certificate.
+  openssl_certificate:
+    path: "{{rke_project_path}}/{{ server_hostname }}/fullchain.pem"
+    privatekey_path: "{{rke_project_path}}/{{ server_hostname }}/privkey.pem"
+    csr_path: "{{rke_project_path}}/{{ server_hostname }}/{{ server_hostname }}.csr"
+    owner: "{{cert_user}}"
+    group: "{{cert_user_group}}"
+    provider: selfsigned
